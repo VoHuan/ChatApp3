@@ -33,19 +33,11 @@ const ListUserScreen = (props) => {
 
 
     const [scannedDevices, setScannedDevices] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [isoading, setLoading] = useState(true);
     const [loadingText, setLoadingText] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        try {
-            let device = RNBluetoothClassic.accept({ delimiter: '\r' });
-            console.log("device accept:")
-            console.log(device)
-        } catch (error) {
-            console.log("error of accept")
-        }
-
         scanDevices();
     }, []);
     useEffect(() => {

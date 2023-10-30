@@ -9,7 +9,8 @@ import {
     TouchableOpacity,
     Alert,
     BackHandler,
-    PermissionsAndroid
+    PermissionsAndroid,
+    Platform
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Constants from '../ultils/Constants';
@@ -23,7 +24,20 @@ import RNBluetoothClassic, { BluetoothEventType } from 'react-native-bluetooth-c
 const WelcomeScreen = (props) => {
 
 
-
+    useEffect(() => {
+        try {
+            let device = RNBluetoothClassic.accept({
+                CONNECTOR_TYPE: "rfcomm",
+                DELIMITER: '\r',
+                SECURE_SOCKET: false,
+                DEVICE_CHARSET: "utf-8",
+            })
+            console.log("device accept:")
+            console.log(device)
+        } catch (error) {
+            console.log("error of accept")
+        }
+    }, []);
     //navigation
     const { navigation, route } = (props)
     // functions of navigate to/back
@@ -32,56 +46,6 @@ const WelcomeScreen = (props) => {
     const [start, setStart] = useState(false)
     const [name, setName] = useState('')
 
-    
-    useEffect(() => {
-        checkBluetoothStatus();
-    }, []);
-
-    
-    const checkBluetoothStatus = async () => {
-        const available = await RNBluetoothClassic.isBluetoothAvailable();
-        const enabled = await RNBluetoothClassic.isBluetoothEnabled();
-        const request = await requestAccessFineLocationPermission();
-        if (!request) {
-            Alert.alert("you have denied the access Fine Location Permission ")
-            BackHandler.exitApp();
-        }
-        if (!available) {
-            Alert.alert("Your device cannot operate this application ")
-            BackHandler.exitApp();
-        }
-        if (!enabled) {
-            try {
-                const res = await RNBluetoothClassic.requestBluetoothEnabled();
-                console.log(res)
-                // if (res != true) {
-                //     BackHandler.exitApp();
-                // }
-            } catch (error) {
-                console.log(error)
-                if (error.message === "User did not enable Bluetooth") {
-                    BackHandler.exitApp();
-                }
-            }
-
-        }
-    };
-
-    const requestAccessFineLocationPermission = async () => {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Access fine location required for discovery',
-            message:
-              'In order to perform discovery, you must enable/allow ' +
-              'fine location access.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      };
 
     return <View style={styles.container}>
 
